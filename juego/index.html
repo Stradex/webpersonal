@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <title>PeerJS Example</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
+        <script src="networking.js"></script>
+        <script src="index.js"></script>
+    </head>
+    <body>
+        <div id="ui_game" class="w-full hidden">
+            <div class="w-full">
+                <div class="flex flex-col font-sans rounded-lg bg-slate-200 justify-center">
+                <div class="flex flex-row m-5 p-5 font-sans space-x-5 rounded-lg bg-slate-200 justify-center">
+                    <div class="bg-slate-300 rounded-lg p-5" style="max-width: 500px;">
+                        <h2 class="font-bold text-lg text-center">Crash de Bitcoin</h2>
+                        <div class="p-5 justify-center text-center">
+                            <img class="mx-auto block" src="https://digitalnod.co/wp-content/uploads/2022/05/976x664_Bitcoin-and-the-Crypto-Market-Crash.png"  />
+                        </div>
+                        <p class="text-center">Además de seguir a bitcoin en su caída, hay varias razones que impulsan a las altcoins a la baja en sus cotizaciones.</p>
+                    </div>
+                    <div class="bg-slate-400 rounded-lg p-5" style="max-width: 500px;">
+                        <h2 class="font-bold text-lg text-center">Usuarios</h2>
+                        <p id="game_users_list">...</p>
+                    </div>
+      
+                </div>
+                <div class="flex w-full justify-center space-x-5 p-5">
+                    <button class="h-10 px-6 font-semibold rounded-md bg-black hover:bg-white text-white hover:text-black" type="button">
+                        Comprar
+                      </button>
+                      <button class="h-10 px-6 font-semibold rounded-md bg-black hover:bg-white text-white hover:text-black" type="button">
+                        Vender
+                      </button>
+                    </div>
+            </div>
+
+            </div>
+        </div>
+        <div id="ui_lobby" class="w-full hidden ">
+            <div class="flex flex-col m-5 p-5 font-sans space-y-5 rounded-lg bg-slate-200">
+                <h2 class="font-bold text-xl text-center">Lobby</h2>
+                <p type="text" id="room_lobby" class="font-bold text-left bg-slate-400 p-3 rounded-md" placeholder="ID de la sala a unirse.">...</p>
+                <div class="flex w-full justify-center space-x-5">
+                <button class="h-10 px-6 font-semibold rounded-md bg-black hover:bg-white text-white hover:text-black" type="button" onclick="clickQuitToMainMenu()">
+                    Salir
+                  </button>
+                  <button id="btn_start_game" class="h-10 px-6 font-semibold rounded-md bg-black hover:bg-white text-white hover:text-black" onclick="serverStartGame()" type="button">
+                    Empezar Partida
+                  </button>
+                </div>
+            </div>
+        </div>
+        <div id="ui_join_server" class="w-full hidden">
+            <div class="flex flex-col m-5 p-5 font-sans space-y-5 rounded-lg bg-slate-200">
+                <h2 class="font-bold text-xl text-center">Introducir ID Sala</h2>
+                <input type="text" id="client_room_id" class="font-bold text-center bg-slate-400 p-3 rounded-md" placeholder="ID de la sala a unirse." />
+                <div class="flex w-full justify-center space-x-5">
+                <button class="h-10 px-6 font-semibold rounded-md bg-black hover:bg-white text-white hover:text-black" type="button" onclick="clickQuitToMainMenu()">
+                    Salir
+                  </button>
+                  <button class="h-10 px-6 font-semibold rounded-md bg-black hover:bg-white text-white hover:text-black" type="button" onclick="clickConnect()">
+                    Unirse a la Sala
+                  </button>
+                </div>
+            </div>
+        </div>
+        <div id="ui_wait_clients" class="w-full hidden">
+            <div class="flex flex-col m-5 p-5 font-sans space-y-5 rounded-lg bg-slate-200">
+                <h2 class="font-bold text-xl text-center">ID Sala</h2>
+                <p id="server_room_id" class="font-bold text-center bg-slate-400 p-3 rounded-md">...</p>
+                <button id="copy_clipboard_btn" class="h-10 px-6 font-semibold rounded-md bg-black hover:bg-white text-white hover:text-black" onclick="copyServerID()">Copiar ID</button>
+                <p class="font-bold text-lg text-center">Esperando jugadores...</p>
+                <div class="flex w-full justify-center">
+                <button class="h-10 px-6 font-semibold rounded-md bg-black hover:bg-white text-white hover:text-black" type="button" onclick="clickQuitToMainMenu()">
+                    Cerrar Sala
+                  </button>
+                </div>
+            </div>
+        </div>
+        <div id="ui_main_menu" class="flex w-full justify-center">
+            <div class="flex flex-col m-5 p-5 font-sans space-y-5 rounded-lg bg-slate-200 max-w-2xl w-full">
+                <h1 class="text-center font-bold text-lg">Nombre</h1>
+                <input id="user_name" class="h-10 w-full max-w-lg px-6 font-semibold rounded-md bg-slate-100 m-auto" type="text" placeholder="Nombre de Usuario" /> 
+                <div class="flex w-full justify-center">
+                <button class="h-10 px-6 font-semibold rounded-md bg-black hover:bg-white text-white hover:text-black" type="button" onclick="clickHostServer()">
+                    Crear Partida
+                  </button>
+                </div>
+                <div class="flex w-full justify-center">
+                    <button class="h-10 px-6 font-semibold rounded-md bg-black hover:bg-white text-white hover:text-black" type="button" onclick="clickJoinServer()">
+                        Unirse a Partida
+                      </button>
+                    </div>
+            </div>
+        </div>
+        <div>
+        <h2 class="text-lg font-bold text-center">DEBUG</h2>
+        <table>
+            <tr>
+                <td>
+                    My Peer ID: 
+                </td>
+                <td>
+                    <div id="peer_id"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Server ID:
+                </td>
+                <td>
+                    <input id="server_peer_id" type="text" placeholder="ID of the Server to Connect" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="button" value="Join Server" onclick="onPressConnectToPeer()">
+                </td>
+                <td>
+
+                </td>
+            </tr>
+        </table>
+        <h2>Connection Status:</h2>
+        <div id="conn_status"></div>
+        <h2>Data Received:</h2>
+        <div id="data_received"></div>
+    </div>
+    </body>
+</html>
